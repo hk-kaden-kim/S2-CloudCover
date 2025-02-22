@@ -1,5 +1,6 @@
 import os
 import torch
+import rasterio
 import pandas as pd
 import numpy as np
 import albumentations as A
@@ -13,8 +14,8 @@ from typing import ClassVar
 from collections.abc import Callable, Sequence
 from matplotlib.figure import Figure
 
-class CustomTransforms(object):
-    """Customized Tranform Function"""
+class _CustomTransforms(object):
+    """Customized Tranform Function."""
 
     def __call__(self, sample):
 
@@ -30,6 +31,11 @@ class CustomTransforms(object):
         return {'image': image, 'mask': mask}
 
 class CustomCloudCoverDetection(CloudCoverDetection):
+    """
+    Customized Tranform Function.
+    - Compatible with Albumentation
+    - Plot RGB and NIR together
+    """
 
     url = 'https://radiantearth.blob.core.windows.net/mlhub/ref_cloud_cover_detection_challenge_v1/final'
     all_bands = ('B02', 'B03', 'B04', 'B08')
@@ -72,6 +78,42 @@ class CustomCloudCoverDetection(CloudCoverDetection):
 
         self.metadata = pd.read_csv(self.csv)
 
+    def __getitem__(self, index: int) -> dict[str, Tensor]:
+        """Returns a sample from dataset.
+
+        Args:
+            index: index to return
+
+        Returns:
+            data and label at given index
+        """
+        chip_id = self.metadata.iat[index, 0]
+        image = self._load_image(chip_id)
+        label = self._load_target(chip_id)
+
+        if self.transforms is not None:
+            image = self.transforms(image=image)['image']
+
+        sample = {'image': image, 'mask': label}
+
+        return sample
+
+    def _load_image(self, chip_id: str) -> Tensor:
+        """Load all source images for a chip.
+
+        Args:
+            chip_id: ID of the chip.
+
+        Returns:
+            a tensor of stacked source image data
+        """
+        path = os.path.join(self.root, self.split, f'{self.split}_features', chip_id)
+        images = []
+        for band in self.bands:
+            with rasterio.open(os.path.join(path, f'{band}.tif')) as src:
+                images.append(src.read(1).astype(np.float32))
+        return np.stack(images, axis=2)
+
     def plot(
         self,
         sample: dict[str, Tensor],
@@ -106,8 +148,10 @@ class CustomCloudCoverDetection(CloudCoverDetection):
             n_cols = 3
 
         image, mask = sample['image'], sample['mask']
+
         R,G,B = image[rgb_indices[0],:,:], image[rgb_indices[1],:,:], image[rgb_indices[2],:,:]
         NIR = image[-1,:,:]
+        
         fig, axs = plt.subplots(nrows=1, ncols=n_cols, figsize=(10, n_cols * 5))
         axs[0].imshow(np.stack((R, G, B), axis=2))
         axs[0].axis('off')
