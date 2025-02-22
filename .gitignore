@@ -1,3 +1,6 @@
-Small_S2_CloudCover_Seg
+dataset/train
+dataset/test
 dataset/*.csv
 dataset/*.pdf
+dataset/*.tif
+*.pyc

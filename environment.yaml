@@ -1,0 +1,18 @@
+name : s2-cloudcover-terratorch
+
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.12
+  - pip
+  - pyyaml
+  - wget
+  - tqdm
+  - pandas
+  - numpy
+  - scikit-learn
+  - matplotlib
+  - gdal
+  - terratorch
