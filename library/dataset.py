@@ -40,7 +40,7 @@ class CustomCloudCoverDetection(CloudCoverDetection):
     url = 'https://radiantearth.blob.core.windows.net/mlhub/ref_cloud_cover_detection_challenge_v1/final'
     all_bands = ('B02', 'B03', 'B04', 'B08')
     rgb_bands = ('B04', 'B03', 'B02')
-    splits: ClassVar[dict[str, str]] = {'train': 'public', 'test': 'private'}
+    splits: ClassVar[dict[str, str]] = {'train': 'public', 'test': 'private', 'val': ''}
 
     def __init__(
         self,
@@ -73,7 +73,7 @@ class CustomCloudCoverDetection(CloudCoverDetection):
         self.transforms = transforms
         self.download = download
 
-        self.csv = os.path.join(self.root, self.split, f'{self.split}_metadata.csv')
+        self.csv = os.path.join(self.root, 'train' if split == 'val' else self.split, f'{self.split}_metadata.csv')
         self._verify()
 
         self.metadata = pd.read_csv(self.csv)
