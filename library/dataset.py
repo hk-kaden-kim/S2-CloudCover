@@ -14,21 +14,8 @@ from typing import ClassVar
 from collections.abc import Callable, Sequence
 from matplotlib.figure import Figure
 
-class _CustomTransforms(object):
-    """Customized Tranform Function."""
-
-    def __call__(self, sample):
-
-        image, mask = sample['image'], sample['mask']
-
-        MIN_MAX_SCALE = A.Normalize(normalization='min_max_per_channel')
-
-        image = image.cpu().detach().numpy() # Convert to the numpy array
-        image = np.transpose(image, (1,2,0)) # (B,H,W) to (H,W,B)
-        image = MIN_MAX_SCALE(image=image)['image'] # Min-Max Scaling by each Band
-        image = torch.from_numpy(np.transpose(image, (2,0,1))) # (H,W,B) to (B,H,W)
-
-        return {'image': image, 'mask': mask}
+from terratorch.datasets.transforms import albumentations_to_callable_with_dict
+from terratorch.datamodules.torchgeo_data_module import build_callable_transform_from_torch_tensor
 
 class CustomCloudCoverDetection(CloudCoverDetection):
     """
@@ -66,14 +53,33 @@ class CustomCloudCoverDetection(CloudCoverDetection):
         """
         assert split in self.splits
         assert set(bands) <= set(self.all_bands)
+        # assert transforms are <class 'albumentations.core.composition.Compose'>
+
+        # print(type(transforms))
 
         self.root = root
         self.split = split
         self.bands = bands
-        self.transforms = transforms
+
+        if isinstance(transforms, list):
+            transforms_as_callable = albumentations_to_callable_with_dict(transforms)
+            self.transforms = build_callable_transform_from_torch_tensor(transforms_as_callable)
+        else:
+            self.transforms = transforms
+        # else if function
+            
+
+        # if istype(transforms, list):
+        #     transforms_as_callable = albumentations_to_callable_with_dict(transforms)
+        #     self.transforms = build_callable_transform_from_torch_tensor(transforms_as_callable)
+        # else:
+
+        # print("FLAG",self.transforms)
         self.download = download
 
-        self.csv = os.path.join(self.root, 'train' if split == 'val' else self.split, f'{self.split}_metadata.csv')
+        self.sub_root = 'train' if self.split == 'val' else self.split
+
+        self.csv = os.path.join(self.root, self.sub_root, f'{self.split}_metadata.csv')
         self._verify()
 
         self.metadata = pd.read_csv(self.csv)
@@ -88,14 +94,27 @@ class CustomCloudCoverDetection(CloudCoverDetection):
             data and label at given index
         """
         chip_id = self.metadata.iat[index, 0]
-        image = self._load_image(chip_id)
-        label = self._load_target(chip_id)
+        # image = self._load_image(chip_id)
+        # label = self._load_target(chip_id)
 
+        # output = {
+        #     "image": image,
+        #     "mask": label
+        # }
+        # print(output)
         if self.transforms is not None:
-            image = self.transforms(image=image)['image']
+            # image = self.transforms(image=image)
+            # print("Done!")
+            # print(type(image))
+            # image = self.transforms(image=image)['image']
+            sample = self.transforms(tensor_dict={
+                "image": self._load_image(chip_id), 
+                "mask":self._load_target(chip_id)})
+        #     print(res)
 
-        sample = {'image': image, 'mask': label}
+        # sample = {'image': image, 'mask': label}
 
+        # return sample
         return sample
 
     def _load_image(self, chip_id: str) -> Tensor:
@@ -107,12 +126,26 @@ class CustomCloudCoverDetection(CloudCoverDetection):
         Returns:
             a tensor of stacked source image data
         """
-        path = os.path.join(self.root, self.split, f'{self.split}_features', chip_id)
+        path = os.path.join(self.root, self.sub_root, f'{self.sub_root}_features', chip_id)
         images = []
         for band in self.bands:
             with rasterio.open(os.path.join(path, f'{band}.tif')) as src:
                 images.append(src.read(1).astype(np.float32))
-        return np.stack(images, axis=2)
+        # return torch.from_numpy(np.stack(images, axis=2))
+        return torch.from_numpy(np.array(images))
+
+    def _load_target(self, chip_id: str) -> Tensor:
+        """Load label image for a chip.
+
+        Args:
+            chip_id: ID of the chip.
+
+        Returns:
+            a tensor of the label image data
+        """
+        path = os.path.join(self.root, self.sub_root, f'{self.sub_root}_labels')
+        with rasterio.open(os.path.join(path, f'{chip_id}.tif')) as src:
+            return torch.from_numpy(src.read(1).astype(np.int64))
 
     def plot(
         self,

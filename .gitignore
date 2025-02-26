@@ -4,3 +4,6 @@ dataset/*.csv
 dataset/*.pdf
 dataset/*.tif
 *.pyc
+tmp_*
+output
+*.zip
