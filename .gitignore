@@ -6,4 +6,3 @@ dataset/*.tif
 *.pyc
 tmp_*
 output
-*.zip
