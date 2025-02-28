@@ -5,8 +5,9 @@
 (Why?)
 
 ## Environmetal Setup
-(How to set up?)
-
+```
+conda install environment.yaml
+```
 ## Dataset
 (Which dataset?)
 
