@@ -6,16 +6,72 @@ import numpy as np
 import albumentations as A
 import matplotlib.pyplot as plt
 
+from typing import Any
+
 from torch import Tensor
-from torchgeo.datasets import CloudCoverDetection
+from torchgeo.datasets import CloudCoverDetection, NonGeoDataset
 from torchgeo.datasets.errors import RGBBandsMissingError
 from torchgeo.datasets.utils import Path
+from torchgeo.datamodules import NonGeoDataModule
+
 from typing import ClassVar
 from collections.abc import Callable, Sequence
 from matplotlib.figure import Figure
 
 from terratorch.datasets.transforms import albumentations_to_callable_with_dict
 from terratorch.datamodules.torchgeo_data_module import build_callable_transform_from_torch_tensor
+
+class CustomNonGeoDataModule(NonGeoDataModule):
+
+    def __init__(
+        self,
+        dataset_class: type[NonGeoDataset],
+        batch_size: int = 1,
+        num_workers: int = 0,
+        train_transform: A.Compose | None | list[A.BasicTransform] = None,
+        val_transform: A.Compose | None | list[A.BasicTransform] = None,
+        test_transform: A.Compose | None | list[A.BasicTransform] = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize a new CustomNonGeoDataModule instance.
+
+        Args:
+            dataset_class: Class used to instantiate a new dataset.
+            batch_size: Size of each mini-batch.
+            num_workers: Number of workers for parallel data loading.
+            train_transform:
+            val_transform:      ... NonGeoDataModule does not distinguish transform functions ...
+            test_transform:
+            **kwargs: Additional keyword arguments passed to ``dataset_class``
+        """
+        super().__init__(dataset_class, batch_size, num_workers, **kwargs)
+
+        self.train_transform = train_transform
+        self.val_transform = val_transform
+        self.test_transform = test_transform
+
+    def setup(self, stage: str) -> None:
+        """Set up datasets.
+
+        Called at the beginning of fit, validate, test, or predict. During distributed
+        training, this method is called from every process across all the nodes. Setting
+        state here is recommended.
+
+        Args:
+            stage: Either 'fit', 'validate', 'test', or 'predict'.
+        """
+        if stage in ['fit']:
+            self.train_dataset = self.dataset_class(  # type: ignore[call-arg]
+                split='train', transforms=self.train_transform, **self.kwargs
+            )
+        if stage in ['fit', 'validate']:
+            self.val_dataset = self.dataset_class(  # type: ignore[call-arg]
+                split='val', transforms=self.train_transform, **self.kwargs
+            )
+        if stage in ['test']:
+            self.test_dataset = self.dataset_class(  # type: ignore[call-arg]
+                split='test', transforms=self.train_transform, **self.kwargs
+            )
 
 class CustomCloudCoverDetection(CloudCoverDetection):
     """
@@ -34,7 +90,7 @@ class CustomCloudCoverDetection(CloudCoverDetection):
         root: Path = 'data',
         split: str = 'train',
         bands: Sequence[str] = all_bands,
-        transforms: Callable[[dict[str, Tensor]], dict[str, Tensor]] | None = None,
+        transforms: A.Compose | None | list[A.BasicTransform] = None,
         download: bool = False,
     ) -> None:
         """Initiatlize a CloudCoverDetection instance.
@@ -53,9 +109,6 @@ class CustomCloudCoverDetection(CloudCoverDetection):
         """
         assert split in self.splits
         assert set(bands) <= set(self.all_bands)
-        # assert transforms are <class 'albumentations.core.composition.Compose'>
-
-        # print(type(transforms))
 
         self.root = root
         self.split = split
@@ -66,15 +119,7 @@ class CustomCloudCoverDetection(CloudCoverDetection):
             self.transforms = build_callable_transform_from_torch_tensor(transforms_as_callable)
         else:
             self.transforms = transforms
-        # else if function
-            
 
-        # if istype(transforms, list):
-        #     transforms_as_callable = albumentations_to_callable_with_dict(transforms)
-        #     self.transforms = build_callable_transform_from_torch_tensor(transforms_as_callable)
-        # else:
-
-        # print("FLAG",self.transforms)
         self.download = download
 
         self.sub_root = 'train' if self.split == 'val' else self.split
@@ -94,25 +139,13 @@ class CustomCloudCoverDetection(CloudCoverDetection):
             data and label at given index
         """
         chip_id = self.metadata.iat[index, 0]
-        # image = self._load_image(chip_id)
-        # label = self._load_target(chip_id)
 
-        # output = {
-        #     "image": image,
-        #     "mask": label
-        # }
-        # print(output)
         if self.transforms is not None:
-            # image = self.transforms(image=image)
-            # print("Done!")
-            # print(type(image))
-            # image = self.transforms(image=image)['image']
-            sample = self.transforms(tensor_dict={
-                "image": self._load_image(chip_id), 
-                "mask":self._load_target(chip_id)})
-        #     print(res)
-
-        # sample = {'image': image, 'mask': label}
+            sample = self.transforms(
+                tensor_dict={
+                    "image": self._load_image(chip_id), 
+                    "mask":self._load_target(chip_id)}
+                )
 
         # return sample
         return sample
@@ -131,7 +164,7 @@ class CustomCloudCoverDetection(CloudCoverDetection):
         for band in self.bands:
             with rasterio.open(os.path.join(path, f'{band}.tif')) as src:
                 images.append(src.read(1).astype(np.float32))
-        # return torch.from_numpy(np.stack(images, axis=2))
+
         return torch.from_numpy(np.array(images))
 
     def _load_target(self, chip_id: str) -> Tensor:

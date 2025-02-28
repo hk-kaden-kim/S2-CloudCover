@@ -7,6 +7,7 @@
 ## Environmetal Setup
 ```
 conda env create -f environment.yaml
+pip install terratorch
 ```
 ## Dataset
 (Which dataset?)
