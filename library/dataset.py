@@ -28,9 +28,9 @@ class CustomNonGeoDataModule(NonGeoDataModule):
         dataset_class: type[NonGeoDataset],
         batch_size: int = 1,
         num_workers: int = 0,
-        train_transform: A.Compose | None | list[A.BasicTransform] = None,
-        val_transform: A.Compose | None | list[A.BasicTransform] = None,
-        test_transform: A.Compose | None | list[A.BasicTransform] = None,
+        train_aug: A.Compose | None | list[A.BasicTransform] = None,
+        val_aug: A.Compose | None | list[A.BasicTransform] = None,
+        test_aug: A.Compose | None | list[A.BasicTransform] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize a new CustomNonGeoDataModule instance.
@@ -39,16 +39,16 @@ class CustomNonGeoDataModule(NonGeoDataModule):
             dataset_class: Class used to instantiate a new dataset.
             batch_size: Size of each mini-batch.
             num_workers: Number of workers for parallel data loading.
-            train_transform:
-            val_transform:      ... NonGeoDataModule does not distinguish transform functions ...
-            test_transform:
+            train_aug:
+            val_aug:      ... NonGeoDataModule does not distinguish transform functions ...
+            test_aug:
             **kwargs: Additional keyword arguments passed to ``dataset_class``
         """
         super().__init__(dataset_class, batch_size, num_workers, **kwargs)
 
-        self.train_transform = train_transform
-        self.val_transform = val_transform
-        self.test_transform = test_transform
+        self.train_aug = train_aug
+        self.val_aug = val_aug
+        self.test_aug = test_aug
 
     def setup(self, stage: str) -> None:
         """Set up datasets.
@@ -60,17 +60,18 @@ class CustomNonGeoDataModule(NonGeoDataModule):
         Args:
             stage: Either 'fit', 'validate', 'test', or 'predict'.
         """
+        # print(self.kwargs)
         if stage in ['fit']:
             self.train_dataset = self.dataset_class(  # type: ignore[call-arg]
-                split='train', transforms=self.train_transform, **self.kwargs
+                split='train', transforms=self.train_aug, **self.kwargs
             )
         if stage in ['fit', 'validate']:
             self.val_dataset = self.dataset_class(  # type: ignore[call-arg]
-                split='val', transforms=self.train_transform, **self.kwargs
+                split='val', transforms=self.val_aug, **self.kwargs
             )
         if stage in ['test']:
             self.test_dataset = self.dataset_class(  # type: ignore[call-arg]
-                split='test', transforms=self.train_transform, **self.kwargs
+                split='test', transforms=self.test_aug, **self.kwargs
             )
 
 class CustomCloudCoverDetection(CloudCoverDetection):
