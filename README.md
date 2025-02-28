@@ -6,7 +6,7 @@
 
 ## Environmetal Setup
 ```
-conda install environment.yaml
+conda env create -f environment.yaml
 ```
 ## Dataset
 (Which dataset?)
