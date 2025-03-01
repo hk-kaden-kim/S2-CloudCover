@@ -7,6 +7,22 @@ from terratorch.tasks.tiled_inference import TiledInferenceParameters
 from torchmetrics import ClasswiseWrapper, MetricCollection
 from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score, MulticlassJaccardIndex, Dice
 
+from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+import numpy as np
+
+class TensorboardLogReader():
+
+    def __init__(self, event_file: str):
+        self.event_file = event_file
+        self.acc = EventAccumulator(event_file).Reload()
+        self.tags = self.acc.Tags()['scalars']
+
+    def get_values(self, name):
+
+        values = self.acc.Scalars(name)
+        values = np.array([v.value for v in values])
+
+        return values
 
 class CustomSemanticSegmentationTask(SemanticSegmentationTask):
 
