@@ -21,6 +21,9 @@ from matplotlib.figure import Figure
 from terratorch.datasets.transforms import albumentations_to_callable_with_dict
 from terratorch.datamodules.torchgeo_data_module import build_callable_transform_from_torch_tensor
 
+import xrspatial.multispectral as ms
+import xarray
+
 class CustomNonGeoDataModule(NonGeoDataModule):
 
     def __init__(
@@ -215,16 +218,19 @@ class CustomCloudCoverDetection(CloudCoverDetection):
             n_cols = 3
 
         image, mask = sample['image'], sample['mask']
-
-        R,G,B = image[rgb_indices[0],:,:], image[rgb_indices[1],:,:], image[rgb_indices[2],:,:]
+        # print(mask.numpy().min(), mask.numpy().max())
+        RGB = ms.true_color(r=xarray.DataArray(image[rgb_indices[0],:,:].numpy(), dims=["y", "x"]), 
+                            g=xarray.DataArray(image[rgb_indices[1],:,:].numpy(), dims=["y", "x"]), 
+                            b=xarray.DataArray(image[rgb_indices[2],:,:].numpy(), dims=["y", "x"]))
         NIR = image[-1,:,:]
         
-        fig, axs = plt.subplots(nrows=1, ncols=n_cols, figsize=(10, n_cols * 5))
-        axs[0].imshow(np.stack((R, G, B), axis=2))
+        fig, axs = plt.subplots(nrows=1, ncols=n_cols, figsize=(10, n_cols * 10))
+        
+        axs[0].imshow(RGB.data[:,:,:-1])
         axs[0].axis('off')
         axs[1].imshow(NIR)
         axs[1].axis('off')
-        axs[2].imshow(mask)
+        axs[2].imshow(mask, vmin=0, vmax=1)
         axs[2].axis('off')
 
         if 'prediction' in sample:

@@ -10,6 +10,26 @@ from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score, M
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 import numpy as np
 
+import matplotlib.pyplot as plt
+
+def TensorboardPlot(models: list, metrics: str):
+
+    nrows, ncols = 1, 3
+    fig = plt.figure(figsize=(ncols*4, nrows*4))
+
+    for i, t in enumerate(['train', 'val', 'test']):
+        ax = fig.add_subplot(nrows, ncols, i+1)
+        for k, m in models.items():
+            m_scores = m[0] if t != 'test' else m[1]
+            score = m_scores.get_values(f"{t}/{metrics}")
+            ax.plot(score, label=f"{k}: {score.max():.4f}")
+        ax.set_title(t)
+        ax.set_xlabel('Epoch')
+        ax.set_ylabel(f"{metrics}")
+        ax.legend()
+
+    fig.tight_layout()
+
 class TensorboardLogReader():
 
     def __init__(self, event_file: str):
