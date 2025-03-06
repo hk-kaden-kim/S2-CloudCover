@@ -6,3 +6,4 @@ dataset/*.tif
 *.pyc
 tmp_*
 output
+_legacy
