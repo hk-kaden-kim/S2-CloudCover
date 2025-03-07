@@ -1,5 +1,7 @@
 dataset/train
 dataset/test
+dataset/public
+dataset/private
 dataset/*.csv
 dataset/*.pdf
 dataset/*.tif

@@ -1,4 +1,4 @@
-name : s2-cloudcover-terratorch
+name : s2-cloudcover
 
 channels:
   - defaults
@@ -14,7 +14,9 @@ dependencies:
   - numpy
   - scikit-learn
   - matplotlib
-  - ipykernel
   - gdal
   - tensorboard
   - xarray-spatial
+  - dask
+  - ipykernel
+  - ipywidgets
