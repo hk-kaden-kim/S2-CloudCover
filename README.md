@@ -7,7 +7,7 @@
 ## Environmetal Setup
 ```
 conda env create -f environment.yaml
-pip install terratorch==0.99.7
+pip install terratorch==0.99.8
 ```
 
 ```
