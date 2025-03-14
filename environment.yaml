@@ -5,18 +5,15 @@ channels:
   - conda-forge
 
 dependencies:
-  - python=3.11
+  - python=3.12
   - pip
-  - pyyaml
-  - wget
-  - tqdm
-  - pandas
-  - numpy
-  - scikit-learn
-  - matplotlib
   - gdal
-  - tensorboard
+  - rasterio
   - xarray-spatial
   - dask
   - ipykernel
   - ipywidgets
+  - pip:
+    - git+https://github.com/IBM/terratorch.git@fix/506   # Check the latest version
+    
+  # INFO:terratorch:granitewxc not installed, please use pip install granitewxc
