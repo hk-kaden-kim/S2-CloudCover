@@ -13,6 +13,7 @@ dependencies:
   - dask
   - ipykernel
   - ipywidgets
+  - tensorboard
   - pip:
     - git+https://github.com/IBM/terratorch.git@fix/506   # Check the latest version
     
