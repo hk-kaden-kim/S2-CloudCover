@@ -1,0 +1,20 @@
+name : s2-cloudcover
+
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.12
+  - pip
+  - gdal
+  - rasterio
+  - xarray-spatial
+  - dask
+  - ipykernel
+  - ipywidgets
+  - tensorboard
+  - pip:
+    - git+https://github.com/IBM/terratorch.git@fix/506   # Check the latest version
+    
+  # INFO:terratorch:granitewxc not installed, please use pip install granitewxc
