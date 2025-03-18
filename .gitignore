@@ -8,4 +8,5 @@ dataset/*.tif
 *.pyc
 tmp_*
 output
+_output
 _legacy
