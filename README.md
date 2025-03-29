@@ -7,12 +7,8 @@
 ## Environmetal Setup
 ```
 conda env create -f environment.yaml
-pip install terratorch==0.99.8
 ```
 
-```
-conda install --force-reinstall rasterio        # Needed?
-```
 ## Dataset
 (Which dataset?)
 
