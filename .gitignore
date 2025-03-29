@@ -6,7 +6,7 @@ dataset/*.csv
 dataset/*.pdf
 dataset/*.tif
 *.pyc
-tmp_*
+tmp*
 output
 _output
 _legacy

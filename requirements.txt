@@ -4,6 +4,6 @@ xarray-spatial
 dask
 
 # install terratorch
-git+https://github.com/IBM/terratorch.git@fix/506       # issue fixed for model_arg smp arguments collison
+git+https://github.com/IBM/terratorch.git
 granitewxc
 
