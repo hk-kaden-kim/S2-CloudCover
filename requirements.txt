@@ -1,7 +1,5 @@
 # s2-CloudCoverDetection dataset class requirements
-rasterio
 xarray-spatial
-dask
 
 # install terratorch
 terratorch==1.0
