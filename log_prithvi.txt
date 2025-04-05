@@ -1,0 +1,169 @@
+
+
+
+2025-04-02 10:50:49 : Start!
+
+
+
+INFO: Seed set to 42
+INFO:lightning.fabric.utilities.seed:Seed set to 42
+INFO:root:Loaded weights for HLSBands.BLUE in position 0 of patch embed
+INFO:root:Loaded weights for HLSBands.GREEN in position 1 of patch embed
+INFO:root:Loaded weights for HLSBands.RED in position 2 of patch embed
+INFO:root:Loaded weights for HLSBands.NIR_NARROW in position 3 of patch embed
+INFO: Using 16bit Automatic Mixed Precision (AMP)
+INFO:lightning.pytorch.utilities.rank_zero:Using 16bit Automatic Mixed Precision (AMP)
+INFO: GPU available: True (cuda), used: True
+INFO:lightning.pytorch.utilities.rank_zero:GPU available: True (cuda), used: True
+INFO: TPU available: False, using: 0 TPU cores
+INFO:lightning.pytorch.utilities.rank_zero:TPU available: False, using: 0 TPU cores
+INFO: HPU available: False, using: 0 HPUs
+INFO:lightning.pytorch.utilities.rank_zero:HPU available: False, using: 0 HPUs
+INFO: You are using a CUDA device ('NVIDIA A10G') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+INFO:lightning.pytorch.utilities.rank_zero:You are using a CUDA device ('NVIDIA A10G') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+INFO: LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+INFO:lightning.pytorch.accelerators.cuda:LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+# of Train samples:  8223
+# of Val samples:  3525
+# of Test samples:  10980
+Model configuration...
+prithvi_eo_v2_300 (Pre-training: True) + UNetDecoder
+┏━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
+┃   ┃ Name          ┃ Type             ┃ Params ┃ Mode  ┃
+┡━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━┩
+│ 0 │ model         │ PixelWiseModel   │  323 M │ train │
+│ 1 │ criterion     │ CrossEntropyLoss │      0 │ train │
+│ 2 │ train_metrics │ MetricCollection │      0 │ train │
+│ 3 │ val_metrics   │ MetricCollection │      0 │ train │
+│ 4 │ test_metrics  │ ModuleList       │      0 │ train │
+└───┴───────────────┴──────────────────┴────────┴───────┘
+Trainable params: 323 M                                                                              
+Non-trainable params: 0                                                                              
+Total params: 323 M                                                                                  
+Total estimated model params size (MB): 1.3 K                                                        
+Modules in train mode: 617                                                                           
+Modules in eval mode: 0                                                                              
+/home/ec2-user/miniconda3/envs/s2-cloudcover/lib/python3.12/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:425: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=3` in the `DataLoader` to improve performance.
+/home/ec2-user/miniconda3/envs/s2-cloudcover/lib/python3.12/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:425: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=3` in the `DataLoader` to improve performance.
+/home/ec2-user/miniconda3/envs/s2-cloudcover/lib/python3.12/site-packages/torchmetrics/utilities/prints.py:43: UserWarning: The ``compute`` method of metric MulticlassJaccardIndex was called before the ``update`` method which may lead to errors, as metric states have not yet been updated.
+  warnings.warn(*args, **kwargs)
+script_training_prithvi.sh: line 11: 24699 Killed                  python ./training.py -e 30 -b 8 -lr 1e-6 -bc prithvi_eo_v2_300 -dc UNetDecoder
+
+
+
+2025-04-02 11:16:53 : Done !
+
+
+
+
+
+
+2025-04-02 18:00:20 : Start!
+
+
+
+INFO: Seed set to 42
+INFO:lightning.fabric.utilities.seed:Seed set to 42
+INFO:root:Loaded weights for HLSBands.BLUE in position 0 of patch embed
+INFO:root:Loaded weights for HLSBands.GREEN in position 1 of patch embed
+INFO:root:Loaded weights for HLSBands.RED in position 2 of patch embed
+INFO:root:Loaded weights for HLSBands.NIR_NARROW in position 3 of patch embed
+INFO: Using 16bit Automatic Mixed Precision (AMP)
+INFO:lightning.pytorch.utilities.rank_zero:Using 16bit Automatic Mixed Precision (AMP)
+INFO: GPU available: True (cuda), used: True
+INFO:lightning.pytorch.utilities.rank_zero:GPU available: True (cuda), used: True
+INFO: TPU available: False, using: 0 TPU cores
+INFO:lightning.pytorch.utilities.rank_zero:TPU available: False, using: 0 TPU cores
+INFO: HPU available: False, using: 0 HPUs
+INFO:lightning.pytorch.utilities.rank_zero:HPU available: False, using: 0 HPUs
+INFO: You are using a CUDA device ('NVIDIA A10G') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+INFO:lightning.pytorch.utilities.rank_zero:You are using a CUDA device ('NVIDIA A10G') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+INFO: LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+INFO:lightning.pytorch.accelerators.cuda:LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+# of Train samples:  8223
+# of Val samples:  3525
+# of Test samples:  10980
+Model configuration...
+prithvi_eo_v2_300 (Pre-training: True) + UNetDecoder
+┏━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
+┃   ┃ Name          ┃ Type             ┃ Params ┃ Mode  ┃
+┡━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━┩
+│ 0 │ model         │ PixelWiseModel   │  323 M │ train │
+│ 1 │ criterion     │ CrossEntropyLoss │      0 │ train │
+│ 2 │ train_metrics │ MetricCollection │      0 │ train │
+│ 3 │ val_metrics   │ MetricCollection │      0 │ train │
+│ 4 │ test_metrics  │ ModuleList       │      0 │ train │
+└───┴───────────────┴──────────────────┴────────┴───────┘
+Trainable params: 323 M                                                                                                                                
+Non-trainable params: 0                                                                                                                                
+Total params: 323 M                                                                                                                                    
+Total estimated model params size (MB): 1.3 K                                                                                                          
+Modules in train mode: 617                                                                                                                             
+Modules in eval mode: 0                                                                                                                                
+Epoch 0/29 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1027/1027 0:17:01 • 0:00:00 0.98it/s v_num: e-06
+script_training_prithvi.sh: line 11: 38329 Killed                  python ./training.py -e 30 -b 8 -lr 1e-6 -bc prithvi_eo_v2_300 -dc UNetDecoder
+
+
+
+2025-04-02 18:22:30 : Done !
+
+
+
+
+
+
+2025-04-02 22:37:14 : Start!
+
+
+
+INFO: Seed set to 42
+INFO:lightning.fabric.utilities.seed:Seed set to 42
+INFO:root:Loaded weights for HLSBands.BLUE in position 0 of patch embed
+INFO:root:Loaded weights for HLSBands.GREEN in position 1 of patch embed
+INFO:root:Loaded weights for HLSBands.RED in position 2 of patch embed
+INFO:root:Loaded weights for HLSBands.NIR_NARROW in position 3 of patch embed
+INFO: Using 16bit Automatic Mixed Precision (AMP)
+INFO:lightning.pytorch.utilities.rank_zero:Using 16bit Automatic Mixed Precision (AMP)
+INFO: GPU available: True (cuda), used: True
+INFO:lightning.pytorch.utilities.rank_zero:GPU available: True (cuda), used: True
+INFO: TPU available: False, using: 0 TPU cores
+INFO:lightning.pytorch.utilities.rank_zero:TPU available: False, using: 0 TPU cores
+INFO: HPU available: False, using: 0 HPUs
+INFO:lightning.pytorch.utilities.rank_zero:HPU available: False, using: 0 HPUs
+INFO: You are using a CUDA device ('NVIDIA A10G') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+INFO:lightning.pytorch.utilities.rank_zero:You are using a CUDA device ('NVIDIA A10G') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+INFO: LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+INFO:lightning.pytorch.accelerators.cuda:LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+# of Train samples:  8223
+# of Val samples:  3525
+# of Test samples:  10980
+Model configuration...
+prithvi_eo_v2_300 (Pre-training: True) + UNetDecoder
+┏━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
+┃   ┃ Name          ┃ Type             ┃ Params ┃ Mode  ┃
+┡━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━┩
+│ 0 │ model         │ PixelWiseModel   │  323 M │ train │
+│ 1 │ criterion     │ CrossEntropyLoss │      0 │ train │
+│ 2 │ train_metrics │ MetricCollection │      0 │ train │
+│ 3 │ val_metrics   │ MetricCollection │      0 │ train │
+│ 4 │ test_metrics  │ ModuleList       │      0 │ train │
+└───┴───────────────┴──────────────────┴────────┴───────┘
+Trainable params: 323 M                                                                                                                                                
+Non-trainable params: 0                                                                                                                                                
+Total params: 323 M                                                                                                                                                    
+Total estimated model params size (MB): 1.3 K                                                                                                                          
+Modules in train mode: 617                                                                                                                                             
+Modules in eval mode: 0                                                                                                                                                
+INFO: `Trainer.fit` stopped: `max_epochs=30` reached.
+INFO:lightning.pytorch.utilities.rank_zero:`Trainer.fit` stopped: `max_epochs=30` reached.
+Epoch 29/29 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1027/1027 0:16:16 • 0:00:00 1.06it/s v_num: e-06
+
+
+Training completed!
+
+
+
+2025-04-03 09:12:57 : Done !
+
+
+
