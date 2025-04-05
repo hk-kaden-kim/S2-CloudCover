@@ -18,7 +18,7 @@ def get_command_line_options():
     parser.add_argument("--dataroot", "-d", type=str, default='./dataset')
 
     parser.add_argument("--backbone", "-bc", type=str, default='resnet50')
-    parser.add_argument("--decoder", "-d", type=str, default='FCNDecoder')
+    parser.add_argument("--decoder", "-dc", type=str, default='FCNDecoder')
 
     parser.add_argument("--epoch", "-e", type=int, default=50)
     parser.add_argument("--batch", "-b", type=int, default=8)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     model_args = get_model_args(
         backbone = args.backbone,
         decoder = args.decoder,
-        verbose = args.verbose,
+        verbose = False,
     )
     task = get_SegTask(
         model_args = model_args,
@@ -189,14 +189,15 @@ if __name__ == "__main__":
         default_root_dir='output',
     )
 
-    ckpt_root = f"./output/L_{args.backbone}_{args.decoder}/E{args.epoch}_B{args.batch}_ce_LR{args.lr}/checkpoints/"
+    ckpt_root = f"./output/{args.backbone}_{args.decoder}/E{args.epoch}_B{args.batch}_ce_LR{args.lr}/checkpoints/"
+    print(f"Find .ckpt at {ckpt_root}")
     ckpt_name = find_best_ckpt(ckpt_root)
-
+    print(f">>> {ckpt_name}")
     test_results = trainer.test(model=task, datamodule=datamodule, ckpt_path=os.path.join(ckpt_root, ckpt_name))
     
     print("+++++++++++++++++++++++++++++++++++++++++")
     print(test_results)
     print("+++++++++++++++++++++++++++++++++++++++++")
 
-    print("\n\Test completed!")
+    print("\n Test completed!")
 

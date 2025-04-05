@@ -6,6 +6,8 @@ from lightning.pytorch.callbacks import LearningRateMonitor, ModelCheckpoint, Ri
 from lightning.pytorch.loggers import TensorBoardLogger
 import lightning.pytorch as pl
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def get_command_line_options():
 
@@ -16,7 +18,7 @@ def get_command_line_options():
     parser.add_argument("--dataroot", "-d", type=str, default='./dataset')
 
     parser.add_argument("--backbone", "-bc", type=str, default='resnet50')
-    parser.add_argument("--decoder", "-d", type=str, default='FCNDecoder')
+    parser.add_argument("--decoder", "-dc", type=str, default='FCNDecoder')
 
     parser.add_argument("--epoch", "-e", type=int, default=50)
     parser.add_argument("--batch", "-b", type=int, default=8)
