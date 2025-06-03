@@ -5,30 +5,12 @@ from terratorch.models.model import AuxiliaryHead
 from terratorch.tasks.tiled_inference import TiledInferenceParameters
 
 from torchmetrics import ClasswiseWrapper, MetricCollection
-from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score, MulticlassJaccardIndex, Dice
+from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score, MulticlassJaccardIndex
 
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 import numpy as np
 
 import matplotlib.pyplot as plt
-
-def TensorboardPlot(models: list, metrics: str):
-
-    nrows, ncols = 1, 3
-    fig = plt.figure(figsize=(ncols*4, nrows*4))
-
-    for i, t in enumerate(['train', 'val', 'test']):
-        ax = fig.add_subplot(nrows, ncols, i+1)
-        for k, m in models.items():
-            m_scores = m[0] if t != 'test' else m[1]
-            score = m_scores.get_values(f"{t}/{metrics}")
-            ax.plot(score, label=f"{k}: {score.max():.4f}")
-        ax.set_title(t)
-        ax.set_xlabel('Epoch')
-        ax.set_ylabel(f"{metrics}")
-        ax.legend()
-
-    fig.tight_layout()
 
 class TensorboardLogReader():
 
@@ -44,59 +26,45 @@ class TensorboardLogReader():
 
         return values
 
-class CustomSemanticSegmentationTask(SemanticSegmentationTask):
+def loss_plot(plots, tran_n_step=51):
 
-    def configure_metrics(self) -> None:
-        """Initialize the performance metrics."""
-        num_classes: int = self.hparams["model_args"]["num_classes"]
-        ignore_index: int = self.hparams["ignore_index"]
-        class_names = self.hparams["class_names"]
-        metrics = MetricCollection(
-            {
-                "Multiclass_Accuracy": MulticlassAccuracy(
-                    num_classes=num_classes,
-                    ignore_index=ignore_index,
-                    multidim_average="global",
-                    average="micro",
-                ),
-                "Multiclass_Accuracy_Class": ClasswiseWrapper(
-                    MulticlassAccuracy(
-                        num_classes=num_classes,
-                        ignore_index=ignore_index,
-                        multidim_average="global",
-                        average=None,
-                    ),
-                    labels=class_names,
-                ),
-                "Multiclass_Jaccard_Index_Micro": MulticlassJaccardIndex(
-                    num_classes=num_classes, ignore_index=ignore_index, average="micro"
-                ),
-                "Multiclass_Jaccard_Index_Macro": MulticlassJaccardIndex(
-                    num_classes=num_classes, ignore_index=ignore_index,
-                ),
-                "Multiclass_Jaccard_Index_Class": ClasswiseWrapper(
-                    MulticlassJaccardIndex(num_classes=num_classes, ignore_index=ignore_index, average=None),
-                    labels=class_names,
-                ),
-                "Dice_Micro": Dice(
-                    num_classes=num_classes, ignore_index=ignore_index,
-                ),
-                "Dice_Macro": MulticlassJaccardIndex(
-                    num_classes=num_classes, ignore_index=ignore_index, average="macro"
-                ),
-                "Multiclass_F1_Score": MulticlassF1Score(
-                    num_classes=num_classes,
-                    ignore_index=ignore_index,
-                    multidim_average="global",
-                    average="micro",
-                ),
-            }
-        )
-        self.train_metrics = metrics.clone(prefix="train/")
-        self.val_metrics = metrics.clone(prefix="val/")
-        if self.hparams["test_dataloaders_names"] is not None:
-            self.test_metrics = nn.ModuleList(
-                [metrics.clone(prefix=f"test/{dl_name}/") for dl_name in self.hparams["test_dataloaders_names"]]
-            )
-        else:
-            self.test_metrics = nn.ModuleList([metrics.clone(prefix="test/")])
+    nrows, ncols = 1, len(plots)
+    fig = plt.figure(figsize=(ncols*4, nrows*4))
+
+    for i, p in enumerate(plots):
+
+        tr_loss = p['train'].get_values('train/loss')[::tran_n_step]
+        val_loss = p['train'].get_values('val/loss')
+
+        ax = fig.add_subplot(nrows, ncols, i+1)
+
+        ax.plot(tr_loss, label='train')
+        ax.plot(val_loss, label='val')
+
+        ax.set_ylim(0.0, 0.8)
+        ax.set_ylabel('loss')
+        ax.set_xlabel('epoch')
+        ax.set_title(p['name'])
+        ax.legend()
+
+    fig.tight_layout()
+
+def perf_plot(plots, marker):
+
+    nrows, ncols = 1, 1 
+    fig = plt.figure(figsize=(ncols*6, nrows*4))
+
+    for i, p in enumerate(plots):
+        
+        mIoU = p['test'].get_values('test/Multiclass_Jaccard_Index')
+        param = p['param_M']
+
+        plt.scatter([param], mIoU, label=p['name'], s=marker[i][3], 
+                    marker=marker[i][0], edgecolors=marker[i][1], facecolors=marker[i][2])
+
+    plt.ylabel('mIoU')
+    plt.xlabel('params (M)')
+    plt.grid(True)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    
+    fig.tight_layout()
